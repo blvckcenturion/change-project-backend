@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Petition;
 use App\Models\User;
 use App\Models\Signed;
+use DB;
 
 class PetitionController extends Controller
 {
@@ -26,12 +27,9 @@ class PetitionController extends Controller
                 'directedTo' => $request->directedTo,
                 'description' => $request->description,
                 'goal' => $request->goal,
-                'imageUri' => $request->imageUri,
-                'completed' => $request->completed,
-                'registerDate' => $request->registerDate,
-                'status' => $request->status,
-                'userId' => $request->userId
+                'userId' => $request->userId,
             ]);
+
         } catch (Exception $e) {
             $result = ['result' => 'error'];
         }
@@ -48,9 +46,6 @@ class PetitionController extends Controller
             $petition->directedTo = $request->directedTo;
             $petition->description = $request->description;
             $petition->goal = $request->goal;
-            $petition->imageUri = $request->imageUri;
-            $petition->completed = $request->completed;
-            $petition->registerDate = $request->registerDate;
             $petition->update();
         } catch (Exception $e) {
             $result = ['result' => 'error'];
@@ -70,6 +65,7 @@ class PetitionController extends Controller
                 $petition->completed = true;
             }
             $petition->update();
+            
             Signed::create([
                 'userId' => $request->userId,
                 'petitionId' => $id

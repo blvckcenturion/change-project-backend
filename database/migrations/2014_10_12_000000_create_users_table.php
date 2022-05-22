@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('imageUrl')->nullable();
             $table->date('birthDate');
             $table->string('country');
+            $table->integer('status')->default(1);
             $table->rememberToken();
             $table->timestamps();
         });

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('signed', function (Blueprint $table) {
+        Schema::create('signeds', function (Blueprint $table) {
             $table->bigInteger('petitionId')->unsigned()->index();
             $table->bigInteger('userId')->unsigned()->index();
             $table->primary(['petitionId', 'userId']);

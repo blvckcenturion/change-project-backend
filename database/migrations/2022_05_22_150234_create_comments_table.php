@@ -21,6 +21,7 @@ return new class extends Migration
             $table->bigInteger('userId')->unsigned()->index();
             $table->foreign('userId')->references('id')->on('users')->onDelete('cascade')->onUpdate('no action');
             $table->string('comment');
+            $table->integer('status')->default(1);
         });
     }
 

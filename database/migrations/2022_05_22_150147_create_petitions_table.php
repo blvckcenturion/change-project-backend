@@ -23,9 +23,10 @@ return new class extends Migration
             $table->string('directedTo');
             $table->string('description');
             $table->integer('goal');
-            $table->boolean('isGoalCompleted');
-            $table->string('imageUrl');
-            $table->integer('signatureCount');
+            $table->boolean('isGoalCompleted')->default(false);
+            $table->string('imageUrl')->nullable();
+            $table->integer('signatureCount')->default(0);
+            $table->integer('status')->default(1);
         });
     }
 

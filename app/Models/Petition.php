@@ -11,12 +11,12 @@ class Petition extends Model
 
     protected $fillable = [
         'id',
-        'idUser',
+        'userId',
         'title',
         'directedTo',
         'description',
+        'imageUrl',
         'goal',
-        'imageUri',
         'completed',
         'registerDate',
         'status'

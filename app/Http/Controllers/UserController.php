@@ -83,7 +83,7 @@ class UserController extends Controller
 
         $accessToken = auth()->user()->createToken('authToken')->accessToken;
         $responseMessage = "Login Successful";
-        return $this->respondWithToken($accessToken->token, $responseMessage,auth()->user());
+        return $this->respondWithToken($accessToken, $responseMessage,auth()->user());
 
         }
         else{
