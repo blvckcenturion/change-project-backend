@@ -8,4 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Petition extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'id',
+        'idUser',
+        'title',
+        'directedTo',
+        'description',
+        'goal',
+        'imageUri',
+        'completed',
+        'registerDate',
+        'status'
+    ];
 }

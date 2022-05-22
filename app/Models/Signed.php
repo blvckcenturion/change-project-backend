@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Signed extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'petitionId',
+        'userId'
+    ];
 }

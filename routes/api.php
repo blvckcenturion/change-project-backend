@@ -2,6 +2,10 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\PetitionController;
+use App\Http\Controllers\CommentController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +18,30 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['prefix' => 'users', 'middleware' => 'CORS'], function ($router) {
+    Route::post('/register', [UserController::class, 'register'])->name('register.user');
+    Route::post('/login', [UserController::class, 'login'])->name('login.user');
+    Route::get('/view-profile', [UserController::class, 'viewProfile'])->name('profile.user');
+    Route::get('/logout', [UserController::class, 'logout'])->name('logout.user');
+});
+
+Route::group(['prefix' => 'petition'], function($router) {
+    Route::get('/', [PetitionController::class, 'getAllPetitions']);
+    Route::get('/{id}', [PetitionController::class, 'getPetition']);
+    Route::post('/', [PetitionController::class, 'postPetition']);
+    Route::put('/', [PetitionController::class, 'putPetition']);
+    Route::put('/{id}', [PetitionController::class, 'signPetition']);
+    Route::delete('/{id}', [PetitionController::class, 'deletePetition']);
+});
+
+Route::group(['prefix' => 'comments'], function($router) {
+    Route::get('/{id}', [CommentController::class, 'getPetitionComments']);
+    Route::post('/', [CommentController::class, 'postComment']);
+    Route::delete('/{id}', [CommentController::class, 'deleteComment']); 
+});
+
+Route::group(['prefix' => 'signed'], function($router) {
+    Route::get('/user/{id}', [PetitionController::class, 'getUserSigned']);
+    Route::post('/', [PetitionController::class, 'postSigned']);
+    Route::delete('/', [PetitionController::class, 'deleteSigned']);
 });

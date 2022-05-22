@@ -25,7 +25,7 @@ return new class extends Migration
             $table->integer('goal');
             $table->boolean('isGoalCompleted');
             $table->string('imageUrl');
-            //1
+            $table->integer('signatureCount');
         });
     }
 
