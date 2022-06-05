@@ -46,6 +46,7 @@ class PetitionController extends Controller
             $petition->directedTo = $request->directedTo;
             $petition->description = $request->description;
             $petition->goal = $request->goal;
+            $petition->imageUrl = $request->imageUrl;
             $petition->update();
         } catch (Exception $e) {
             $result = ['result' => 'error'];

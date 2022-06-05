@@ -11,6 +11,6 @@ class Signed extends Model
 
     protected $fillable = [
         'petitionId',
-        'userId'
+        'userId',
     ];
 }

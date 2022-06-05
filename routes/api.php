@@ -18,7 +18,7 @@ use App\Http\Controllers\CommentController;
 |
 */
 
-Route::group(['prefix' => 'users', 'middleware' => 'CORS'], function ($router) {
+Route::group(['prefix' => 'users'], function ($router) {
     Route::post('/register', [UserController::class, 'register'])->name('register.user');
     Route::post('/login', [UserController::class, 'login'])->name('login.user');
     Route::get('/view-profile', [UserController::class, 'viewProfile'])->name('profile.user');
@@ -29,7 +29,6 @@ Route::group(['prefix' => 'petition'], function($router) {
     Route::get('/', [PetitionController::class, 'getAllPetitions']);
     Route::get('/{id}', [PetitionController::class, 'getPetition']);
     Route::post('/', [PetitionController::class, 'postPetition']);
-    Route::put('/', [PetitionController::class, 'putPetition']);
     Route::put('/{id}', [PetitionController::class, 'signPetition']);
     Route::delete('/{id}', [PetitionController::class, 'deletePetition']);
 });
