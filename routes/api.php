@@ -23,6 +23,8 @@ Route::group(['prefix' => 'users'], function ($router) {
     Route::post('/login', [UserController::class, 'login'])->name('login.user');
     Route::get('/view-profile', [UserController::class, 'viewProfile'])->name('profile.user');
     Route::get('/logout', [UserController::class, 'logout'])->name('logout.user');
+    Route::put('/update-profile', [UserController::class, 'updateProfile']);
+    Route::put('/update-password', [UserController::class, 'updateProfilePassword'])->name('update.password.user');
 });
 
 Route::group(['prefix' => 'petition'], function($router) {

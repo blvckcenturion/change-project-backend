@@ -13,7 +13,7 @@ class UserController extends Controller
     protected $user;
     
     public function __construct(){
-        $this->middleware("auth:api",["except" => ["login","register"]]);
+        $this->middleware("auth:api",["except" => ["login","register", "updateProfile", "updateProfilePassword"]]);
         $this->user = new User;
     }
 
@@ -23,13 +23,14 @@ class UserController extends Controller
             'name' => 'required|string',
             'email' => 'required|string|unique:users',
             'password' => 'required|min:6|confirmed',
+            'birthDate' => 'required|date',
         ]);
 
         if($validator->fails()){
             return response()->json([
             'success' => false,
-            'message' => $validator->messages()->toArray()
-            ], 500);
+            'message' => $validator->messages()
+            ], 422);
         }
 
         $data = [
@@ -106,10 +107,69 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function logout(){
-        $user = Auth::guard("api")->user()->token();
-        $user->revoke();
-        $responseMessage = "successfully logged out";
+    public function updateProfile(Request $request) {
+        $validator = Validator::make($request->all(),[
+            'name' => 'required|string',
+            'lastName' => 'required|string',
+            'birthDate' => 'required|date',
+            'country' => 'required|string',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+            'success' => false,
+            'message' => $validator->messages()
+            ], 422);
+        }
+
+        $data = [
+            "name" => $request->name,
+            "lastName" => $request->lastName,
+            "birthDate" => $request->birthDate,
+            "country" => $request->country,
+        ];
+
+        $user = Auth::guard("api")->user()->update($data);
+        // $user->update($data);
+
+        $responseMessage = "User updated successfully";
+        return response()->json([
+            'success' => true,
+            'message' => $responseMessage
+        ], 200);
+    }
+
+    public function updateProfilePassword(Request $request) {
+        $validator = Validator::make($request->all(),[
+            'oldPassword' => 'required|min:6',
+            'password' => 'required|min:6',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+            'success' => false,
+            'message' => $validator->messages()
+            ], 422);
+        }
+        
+        $user = Auth::guard("api")->user();
+
+        if(!Hash::check($request->oldPassword,$user->password)){
+            $responseMessage = "Old password is incorrect";
+            return response()->json([
+            'success' => false,
+            'message' => $responseMessage
+            ], 422);
+        }
+
+        $data = [
+            "password" => Hash::make($request->password),
+        ];
+
+        
+        $user->update($data);
+
+        $responseMessage = "User updated successfully";
         return response()->json([
             'success' => true,
             'message' => $responseMessage
