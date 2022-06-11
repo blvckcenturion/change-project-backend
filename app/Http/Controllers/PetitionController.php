@@ -7,9 +7,16 @@ use App\Models\Petition;
 use App\Models\User;
 use App\Models\Signed;
 use DB;
+use Auth;
+use Validator;
 
 class PetitionController extends Controller
 {
+
+    public function __construct() {
+        $this->middleware("auth:api",["except" => ["getAllPetitions","getPetition","postPetition","signPetition","deletePetition","getPetitionComments","postComment","deleteComment","getUserSigned","postSigned","deleteSigned"]]);
+    }
+
     public function getAllPetitions() {
         return Petition::all();
     }
@@ -20,6 +27,23 @@ class PetitionController extends Controller
 
     public function postPetition(Request $request) {
         $result = ['result' => 'ok'];
+        $validator = Validator::make($request->all(),[
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'directedTo' => 'required|string',
+            'goal' => 'required|integer',
+            'imageUrl' => 'required|string',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+            'success' => false,
+            'message' => $validator->messages()
+            ], 422);
+        }
+
+        $user = Auth::guard("api")->user();
+
 
         try {
             Petition::create([
@@ -27,14 +51,18 @@ class PetitionController extends Controller
                 'directedTo' => $request->directedTo,
                 'description' => $request->description,
                 'goal' => $request->goal,
-                'userId' => $request->userId,
+                'userId' => $user->id,
+                'imageUrl' => $request->imageUrl,
             ]);
 
+            return response()->json([
+                'success' => true,
+                'message' => 'Petition created successfully'
+            ], 200);
         } catch (Exception $e) {
-            $result = ['result' => 'error'];
+            $result = ['success' => false, 'message' => $e->getMessage()];
+            return $result;
         }
-
-        return $result;
     }
 
     public function putPetition(Request $request) {
