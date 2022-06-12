@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Petition;
 use App\Models\User;
 use App\Models\Signed;
@@ -37,7 +38,12 @@ class PetitionController extends Controller
             $s->petition = Petition::find($s->petitionId);
             $petition_user = User::find($s->petition->userId);
             $s->petition->userName = $petition_user->name . " " . $petition_user->lastname;
-            $signed_petitions[] = $s;
+            $signed_petitions[] = $s->petition;
+        }
+
+        foreach($created_petitions as $p){
+            $petition_user = User::find($p->userId);
+            $p->userName = $petition_user->name . " " . $petition_user->lastname;
         }
 
         return response()->json([
@@ -78,7 +84,7 @@ class PetitionController extends Controller
             'description' => 'required|string',
             'directedTo' => 'required|string',
             'goal' => 'required|integer',
-            'imageUrl' => 'required|string',
+            'image' => 'required|image|mimes:jpeg,png,jpg',
         ]);
 
         if($validator->fails()){
@@ -92,19 +98,39 @@ class PetitionController extends Controller
 
 
         try {
-            Petition::create([
-                'title' => $request->title,
-                'directedTo' => $request->directedTo,
-                'description' => $request->description,
-                'goal' => $request->goal,
-                'userId' => $user->id,
-                'imageUrl' => $request->imageUrl,
-            ]);
+            // Petition::create([
+            //     'title' => $request->title,
+            //     'directedTo' => $request->directedTo,
+            //     'description' => $request->description,
+            //     'goal' => $request->goal,
+            //     'userId' => $user->id,
+            //     'imageUrl' => $request->imageUrl,
+            // ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Petition created successfully'
-            ], 200);
+            if($request->hasFile('image')){
+                $image = $request->file('image');
+                $name = time() . $image->getClientOriginalName();
+                $filePath = 'images/' . $name;
+                Storage::disk('s3')->put($filePath, file_get_contents($image), 'public');
+                $url = Storage::disk('s3')->url($filePath);
+                $petition = Petition::create([
+                    'title' => $request->title,
+                    'directedTo' => $request->directedTo,
+                    'description' => $request->description,
+                    'goal' => $request->goal,
+                    'userId' => $user->id,
+                    'imageUrl' => $url,
+                ]);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'petition created',
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'no image found.'
+                ], 400);
+            }
         } catch (Exception $e) {
             $result = ['success' => false, 'message' => $e->getMessage()];
             return $result;
@@ -118,13 +144,12 @@ class PetitionController extends Controller
             'description' => 'required|string',
             'directedTo' => 'required|string',
             'goal' => 'required|integer',
-            'imageUrl' => 'required|string',
         ]);
 
         if($validator->fails()){
             return response()->json([
             'success' => false,
-            'message' => $request
+            'message' => $validator->messages()
             ], 422);
         }
         try {
@@ -134,15 +159,26 @@ class PetitionController extends Controller
                 if($request->goal > $petition->signatureCount) {
                     $petition->isGoalCompleted = 0;
                 }
+                if($request->hasFile('image')){
+                    $image = $request->file('image');
+                    $name = time() . $image->getClientOriginalName();
+                    $filePath = 'images/' . $name;
+                    Storage::disk('s3')->put($filePath, file_get_contents($image), 'public');
+                    $url = Storage::disk('s3')->url($filePath);
+                    $petition->imageUrl = $url;
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'has img',
+                    ], 200);
+                }
                 $petition->title = $request->title;
                 $petition->directedTo = $request->directedTo;
                 $petition->description = $request->description;
                 $petition->goal = $request->goal;
-                $petition->imageUrl = $request->imageUrl;
                 $petition->save();
                 return response()->json([
                     'success' => true,
-                    'message' => 'Petition updated successfully'
+                    'message' => 'Petition updated successfully',
                 ], 200);
             } else {
                 return response()->json([
