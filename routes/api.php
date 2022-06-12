@@ -30,6 +30,7 @@ Route::group(['prefix' => 'users'], function ($router) {
 
 Route::group(['prefix' => 'petition'], function($router) {
     Route::get('/', [PetitionController::class, 'getAllPetitions']);
+    Route::get('/my-petitions', [PetitionController::class, 'getMyPetitions']);
     Route::get('/{id}', [PetitionController::class, 'getPetition']);
     Route::post('/', [PetitionController::class, 'postPetition']);
     Route::put('/{id}', [PetitionController::class, 'putPetition']);

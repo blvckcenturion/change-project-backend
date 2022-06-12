@@ -22,6 +22,32 @@ class PetitionController extends Controller
         return Petition::where('status', 1)->get();
     }
 
+    public function getMyPetitions() {
+        $user = Auth::guard("api")->user();
+        if(!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+        $created_petitions = Petition::where('userId', $user->id)->get();
+        $signed_petitions = [];
+        $signed = Signed::where('userId', $user->id)->get();
+        foreach($signed as $s) {
+            $s->petition = Petition::find($s->petitionId);
+            $petition_user = User::find($s->petition->userId);
+            $s->petition->userName = $petition_user->name . " " . $petition_user->lastname;
+            $signed_petitions[] = $s;
+        }
+
+        return response()->json([
+            'success' => true,
+            'created_petitions' => $created_petitions,
+            'signed_petitions' => $signed_petitions
+        ], 200);
+    }
+
+
     public function getPetition($id) {
         $petition = Petition::find($id);
         if($petition && $petition->status == 1) {
