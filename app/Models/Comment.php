@@ -12,7 +12,6 @@ class Comment extends Model
     protected $fillable = [
         'petitionId',
         'userId',
-        'message',
-        'registerDate'
+        'comment',
     ];
 }

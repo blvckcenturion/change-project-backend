@@ -17,7 +17,7 @@ class Petition extends Model
         'description',
         'imageUrl',
         'goal',
-        'completed',
+        'isGoalCompleted',
         'registerDate',
         'status'
     ];

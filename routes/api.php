@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PetitionController;
+use App\Http\Controllers\SignedController;
 use App\Http\Controllers\CommentController;
 
 
@@ -31,18 +32,16 @@ Route::group(['prefix' => 'petition'], function($router) {
     Route::get('/', [PetitionController::class, 'getAllPetitions']);
     Route::get('/{id}', [PetitionController::class, 'getPetition']);
     Route::post('/', [PetitionController::class, 'postPetition']);
-    Route::put('/{id}', [PetitionController::class, 'signPetition']);
-    Route::delete('/{id}', [PetitionController::class, 'deletePetition']);
+    Route::put('/{id}', [PetitionController::class, 'putPetition']);
 });
 
-Route::group(['prefix' => 'comments'], function($router) {
-    Route::get('/{id}', [CommentController::class, 'getPetitionComments']);
-    Route::post('/', [CommentController::class, 'postComment']);
+Route::group(['prefix' => 'comment'], function($router) {
+    Route::post('/{id}', [CommentController::class, 'postComment']);
     Route::delete('/{id}', [CommentController::class, 'deleteComment']); 
 });
 
 Route::group(['prefix' => 'signed'], function($router) {
-    Route::get('/user/{id}', [PetitionController::class, 'getUserSigned']);
-    Route::post('/', [PetitionController::class, 'postSigned']);
+    Route::get('/user/{id}', [SignedController::class, 'getUserSigned']);
+    Route::post('/{id}', [SignedController::class, 'postSigned']);
     Route::delete('/', [PetitionController::class, 'deleteSigned']);
 });
