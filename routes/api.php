@@ -6,7 +6,6 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PetitionController;
 use App\Http\Controllers\SignedController;
 use App\Http\Controllers\CommentController;
-use App\Http\Controllers\ImageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,5 +45,3 @@ Route::group(['prefix' => 'signed'], function($router) {
     Route::post('/{id}', [SignedController::class, 'postSigned']);
     Route::delete('/', [PetitionController::class, 'deleteSigned']);
 });
-
-Route::post('/image', [ImageController::class, 'upload']);
